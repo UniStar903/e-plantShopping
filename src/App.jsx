@@ -1,49 +1,70 @@
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addItem } from "../CartSlice";
+import CartItem from "./CartItem";
 
-import React, { useState } from 'react';
-import ProductList from './ProductList';
-import './App.css';
-import AboutUs from './AboutUs';
+const ProductList = ({ onHomeClick }) => {
+  const dispatch = useDispatch();
+  const cartItems = useSelector(state => state.cart.items);
 
-function App() {
-  
-  const [showProductList, setShowProductList] = useState(false);
+  const [showCart, setShowCart] = useState(false);
+  const [addedToCart, setAddedToCart] = useState({});
 
-  const handleGetStartedClick = () => {
-    setShowProductList(true);
+  const handleAddToCart = (product) => {
+    dispatch(addItem(product));
+    setAddedToCart(prevState => ({
+      ...prevState,
+      [product.name]: true,
+    }));
   };
 
-  const handleHomeClick = () => {
-    setShowProductList(false);
+  const calculateTotalQuantity = () => {
+    return cartItems ? cartItems.reduce((total, item) => total + item.quantity, 0) : 0;
   };
 
   return (
-    <div className="app-container">
-      <div className={`landing-page ${showProductList ? 'fade-out' : ''}`}>
-        <div className="background-image"></div>
-        <div className="content">
-         <div className="landing_content">
-         <h1>Welcome To Paradise Nursery</h1>
-          <div className="divider"></div>
-          <p>Where Green Meets Serenity</p>
-         
-          <button className="get-started-button" onClick={handleGetStartedClick}>
-            Get Started
-          </button>
-         </div>
-          <div className="aboutus_container">
-          <AboutUs/>
-          </div>
-          </div>
+    <div>
+      <div className="navbar">
+        <div className="luxury">
+          <h3>Paradise Nursery</h3>
+          <i>Where Green Meets Serenity</i>
+        </div>
+        <div>
+          <a href="#" onClick={() => setShowCart(true)}>
+            🛒 Cart ({calculateTotalQuantity()})
+          </a>
+        </div>
+      </div>
 
-      </div>
-      <div className={`product-list-container ${showProductList ? 'visible' : ''}`}>
-        <ProductList onHomeClick={handleHomeClick}/>
-      </div>
+      {!showCart ? (
+        <div className="product-grid">
+          {plantsArray.map((category, index) => (
+            <div key={index}>
+              <h1>{category.category}</h1>
+              <div className="product-list">
+                {category.plants.map((plant, plantIndex) => (
+                  <div className="product-card" key={plantIndex}>
+                    <img src={plant.image} alt={plant.name} />
+                    <div>{plant.name}</div>
+                    <div>{plant.description}</div>
+                    <div>${plant.cost}</div>
+                    <button
+                      onClick={() => handleAddToCart(plant)}
+                      disabled={addedToCart[plant.name]}
+                    >
+                      {addedToCart[plant.name] ? "Added" : "Add to Cart"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <CartItem onContinueShopping={() => setShowCart(false)} />
+      )}
     </div>
   );
-}
+};
 
-export default App;
-
-
-
+export default ProductList;
