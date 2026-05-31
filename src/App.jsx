@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addItem } from "../CartSlice";
+import { addItem } from "./CartSlice";
 import CartItem from "./CartItem";
 
 const ProductList = ({ onHomeClick }) => {
